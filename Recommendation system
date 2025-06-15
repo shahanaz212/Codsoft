@@ -1,0 +1,52 @@
+# Simple Recommendation System WITHOUT any external libraries
+
+# Sample movie dataset
+movies = [
+    {"title": "The Matrix", "genres": ["Action", "Sci-Fi"]},
+    {"title": "Forrest Gump", "genres": ["Drama", "Romance"]},
+    {"title": "The Godfather", "genres": ["Crime", "Drama"]},
+    {"title": "Toy Story", "genres": ["Animation", "Comedy", "Family"]},
+    {"title": "The Avengers", "genres": ["Action", "Adventure", "Sci-Fi"]},
+    {"title": "Titanic", "genres": ["Drama", "Romance"]}
+]
+
+# Function to find movie by title (case-insensitive)
+def find_movie(title):
+    for movie in movies:
+        if movie["title"].lower() == title.lower():
+            return movie
+    return None
+
+# Recommend movies with most shared genres
+def recommend(title, top_n=3):
+    movie = find_movie(title)
+    if not movie:
+        print(f"Movie '{title}' not found.\nAvailable movies:")
+        for m in movies:
+            print("-", m["title"])
+        return
+
+    target_genres = set(movie["genres"])
+    similarity_scores = []
+
+    for other_movie in movies:
+        if other_movie["title"].lower() == title.lower():
+            continue
+        common_genres = target_genres.intersection(set(other_movie["genres"]))
+        similarity_scores.append((other_movie["title"], len(common_genres)))
+
+    # Sort by number of common genres (descending)
+    similarity_scores.sort(key=lambda x: x[1], reverse=True)
+
+    print(f"\nBecause you liked '{movie['title']}', you might also like:")
+    for m in similarity_scores[:top_n]:
+        print("-", m[0])
+
+# Run the program
+if __name__ == "__main__":
+    print("Available movies:")
+    for m in movies:
+        print("-", m["title"])
+
+    user_input = input("\nEnter a movie title: ")
+    recommend(user_input)
